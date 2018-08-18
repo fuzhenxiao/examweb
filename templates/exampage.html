@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="..\static\EXAMPAGE.css">
+	<script src="..\static\jquery.min.js"></script>
+	<script src="..\static\jquery.color.min.js"></script>
+	<title>Sit Exam</title>
+</head>
+<body>
+	<div class='center_area'>
+		<div class="divider">
+			<div class="info_board_name">
+				您的称呼:
+			</div>
+			<input class='name' placeholder="可不填">
+				
+			</input>
+		</div>
+		<div class="divider" id='hand_in_butt'>
+			<div class='give_in' id='check'>交卷</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var Q_AND_A=[];
+	var A=[];
+	var url = window.location.href;
+	var atturl = url.split('/');
+	var usname = atturl[4];
+	usname=usname.slice(3,-3);
+	var data={uname:usname};
+	var total_score = 0
+	//$('.info_bar').hide();
+
+
+	$.post(url,data,function(echo){
+	if(echo.auth=='true'){
+		var Q_AND_A_str=echo.qlist[1];
+		Q_AND_A=JSON.parse(Q_AND_A_str); //Q_AND_A[i].choi1 Q_AND_A[i].ques Q_AND_A[i].rta
+		refresh_list();
+		}else{alert('生成试卷失败');}
+	});
+	$('#check').click(function(){
+		var score_for_one = parseInt(100/Q_AND_A.length);
+		total_score=0;
+		for (let i=0;i<Q_AND_A.length;i++){
+			if(Q_AND_A[i].rta==A[i]){total_score += score_for_one}
+		}
+		var txt='您的分数是'+total_score.toString();
+		alert(txt);      //this makes me upset! it is too primitive!
+	})
+
+	$('body').on('click','.butt',function(){
+		var idd=$(this).attr("id");
+		var strlist=idd.split('');
+		idd=strlist[strlist.length-1];
+		idd=parseInt(idd);
+		var choice=strlist[0];
+		A.splice(idd,1,choice);
+		show_choice();
+
+	})
+//================================functions bellow=============================
+	function refresh_list(){
+	$('.divider2').remove();
+	for (let i = 0;i < Q_AND_A.length;i++){
+		A.push('A');
+		var to_add_html = "\
+		<div class='oneproblem'>\
+			<div class='problem'>\
+				题目："+Q_AND_A[i].ques+"\
+			</div>\
+			<div class='divider2'>\
+				<div class='butt' id='A"+i+"'>A  "+Q_AND_A[i].choi1+"</div>\
+				<div class='butt' id='B"+i+"'>B  "+Q_AND_A[i].choi2+"</div>\
+				<div class='butt' id='C"+i+"'>C  "+Q_AND_A[i].choi3+"</div>\
+				<div class='butt' id='D"+i+"'>D  "+Q_AND_A[i].choi4+"</div>\
+			</div>\
+		</div>\
+		";
+		$('#hand_in_butt').before(to_add_html);
+		show_choice();
+	};
+	};
+	function show_choice(){
+		for (let i = 0;i <A.length;i++){
+			var iddd='#'+A[i]+i.toString();
+			var id1='#A'+i.toString();
+			var id2='#B'+i.toString();
+			var id3='#C'+i.toString();
+			var id4='#D'+i.toString();
+			$(id1).css('border','1px solid white');
+			$(id2).css('border','1px solid white');
+			$(id3).css('border','1px solid white');
+			$(id4).css('border','1px solid white');
+			$(iddd).css('border','1px solid black');
+
+		}
+	}
+</script>
+</html>

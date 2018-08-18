@@ -1,0 +1,81 @@
+body{
+	background-color: #e9ecf3;
+}
+
+.center_area{
+	background-color: white;
+	text-align: center;
+	width: 60%;
+	margin-left: 20%;
+	margin-top: 3%;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	height: auto;
+	border-radius: 5px;
+}
+.divider{
+	display: table;
+	margin-top: 8px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top:5px;
+	padding-bottom:5px;
+	border-radius: 5px;
+	height: auto;
+	width: 97%;
+	border:1px solid #d9dce2;
+}
+.oneproblem{
+	display: table;
+	margin-top: 8px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top:5px;
+	padding-bottom:5px;
+	border-radius: 5px;
+	height: auto;
+	width: 97%;
+	border:1px solid #d9dce2;
+}
+.info_board_name{
+	width: 20%;
+	float: left;
+}
+.name{
+	width: 40%;
+	border-radius: 5px;
+	border:1px solid #659be0;
+	padding-left: 8px;
+}
+.divider2{
+	width: 99%;
+	height: auto;
+	float: left;
+}
+.problem{
+	width: 99%;
+	height: auto;
+	float: left;
+}
+.butt{
+	width: 49%;
+	float: left;
+	transition: 300ms;
+}
+.butt:hover{
+	background-color: #5c97bd;
+}
+.give_in{
+	width: 98%;
+	float: left;
+	transition: 300ms;
+	height: 30px;
+	background-color: #659be0;
+	border:1px solid #659be0;
+	border-radius: 5px;
+}
+
+.give_in:active{
+	background-color: rgb(59,63,81);
+	transition: none!important;
+}

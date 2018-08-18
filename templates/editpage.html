@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="..\static\EDITPAGE.css">
+	<script src="..\static\jquery.min.js"></script>
+	<script src="..\static\jquery.color.min.js"></script>
+	<meta id='description' content="IXAM.com">
+	<title>IXAM</title>
+</head>
+<body>
+	<textarea id='clip' style= 'display:none'>
+		
+	</textarea>
+	<div class='edit' id='editer'>
+		<div class='prob_body'>
+			<div class="describer">题干：</div>
+			<textarea class='inputter' id="problem_it_self"></textarea>
+		</div>
+		<div class='choice'>
+			<div class="describer">选项A:</div>
+			<textarea class='inputter' id="choice1"></textarea>
+		</div>
+		<div class='choice'>
+			<div class="describer">选项B:</div>
+			<textarea class='inputter' id="choice2"></textarea>
+		</div>
+		<div class='choice'>
+			<div class="describer">选项C:</div>
+			<textarea class='inputter' id="choice3"></textarea>
+		</div>
+		<div class='choice'>
+			<div class="describer">选项D:</div>
+			<textarea class='inputter' id="choice4"></textarea>
+		</div>
+		<div class='right_answer'>
+			<div class="describer">正确答案</div>
+			<select class='selecter' id='correctanswer'>
+				<option>A</option>
+				<option>B</option>
+				<option>C</option>
+				<option>D</option>
+			</select>
+		</div>
+		<button class="editbutt" id='commit'> 确认
+		</button>
+		<button class="editbutt" id='cancel'> 取消
+		</button>
+	</div>
+	<div class='headbar' id='headbar1'>
+		<div id='logo_in_headbar'>
+			IXAM
+		</div>
+		<div class='user_bar'>
+			<div class='username' id='usnm'>
+				{{username}}
+			</div>
+		</div>
+	</div>
+	<div id='sidemenu'>
+		<p></p>
+		<button class="sidebutt" id='sidebutt1'> 加载已保存的试卷</button>
+		<button class="sidebutt" id='sidebutt2'> 清空本张试卷</button>
+		<button class="sidebutt" id='sidebutt3'> 保存本张试卷</button>
+		<button class="sidebutt" id='sidebutt4'> 生成试卷链接</button>
+		<button class="sidebutt" id='sidebutt5'> 试做本张试卷</button> <!--only alert and no new page-->
+		<button class="sidebutt" id='sidebutt6'> 退出</button>
+	</div>
+	<div id='problemlist'>
+		<p></p>
+		<button id='add_question'> + 添加问题</button>
+	</div>
+	<div id='info_bar'>
+		<p></p>
+		<img src="..\static\qrcode1.jpg" style="height: 240px; width: 240px;"></img>
+	</div>
+</body>
+
+
+	<script type="text/javascript">
+		$('#editer').hide();
+		$('#add_question').click(function(){
+			$('#editer').show();
+			
+		})
+		$('#commit').click(function(){
+			add_question();
+			clear_edit_board();
+			$('#editer').hide();
+			refresh_list();
+			
+		})
+		$('#cancel').click(function(){
+			clear_edit_board();
+			$('#editer').hide();
+		})
+		$('body').on('click','.deletebuttt',function(){
+			var idd=$(this).attr("id");
+			var strlist=idd.split('');
+			idd=strlist[strlist.length-1];
+			idd=parseInt(idd);
+			Q_AND_A.splice(idd,1);
+			refresh_list();
+
+		})
+		$('#sidebutt1').click(function(){
+			var data={uname:usname}
+			$.post('/askpaper',data,function(echo){
+			if(echo.auth=='true'){
+				var Q_AND_A_str=echo.qlist[1];
+				Q_AND_A=JSON.parse(Q_AND_A_str);
+				refresh_list();
+				}else{alert('并没有找到任何已保存的内容');}
+		});
+		})
+		$('#sidebutt2').click(function(){
+			Q_AND_A=[];
+			refresh_list();
+		})
+		$('#sidebutt3').click(function(){
+			
+			var strQAA=JSON.stringify(Q_AND_A);
+			var data={Q_AND_A:strQAA,uname:usname};
+			if(Q_AND_A==[]){alert('试卷为空')}else{
+			$.post('/savepaper',data,function(echo){
+			if(echo.auth=='true'){
+				alert('保存成功')}else{alert('保存失败');}
+		});
+		}
+		})
+		$('#sidebutt4').click(function(){
+			window.prompt("Copy to clipboard: Ctrl+C, Enter", examloc);
+			alert('试卷链接已经复制到剪贴板')
+		})
+		$('#sidebutt5').click(function(){
+			var loc = '/exam/<'+usname+'>';
+			window.location=loc;
+		})
+		$('#sidebutt6').click(function(){
+			window.location='/';
+		})
+
+//=============== functions below =======================
+		var Q_AND_A=[];
+		var url = window.location.href;
+		var atturl = url.split('/');
+		var usname = atturl[4];
+		usname=usname.slice(3,-3);
+		var examloc = '/exam/<'+usname+'>';
+		function clear_edit_board(){
+			$('#problem_it_self').val('')
+			$('#choice1').val('');
+			$('#choice2').val('');
+			$('#choice3').val('');
+			$('#choice4').val('');
+			$("#correctanswer").val('A');
+		}
+		function add_question(){
+			var question=$('#problem_it_self').val();
+			var choice1=$('#choice1').val();
+			var choice2=$('#choice2').val();
+			var choice3=$('#choice3').val();
+			var choice4=$('#choice4').val();
+			var rightanswer=$("#correctanswer").val();
+			Q_AND_A.push({ques:question,choi1:choice1,choi2:choice2,choi3:choice3,choi4:choice4,rta:rightanswer});
+			};
+
+		function refresh_list(){
+			$('.oneproblem').remove();
+			for (let i = 0;i < Q_AND_A.length;i++){
+				var to_add_html = "\
+				<div class='oneproblem' id=problem"+i+"\
+				>\
+				<div class='p_in_oneproblem'>问题："+Q_AND_A[i].ques+"</div>\
+				<div class='delete_butt_container'>\
+				<button class='deletebuttt' id=deletebutt"+i+">X</button>\
+				</div>\
+				<div class='alist'>\
+					<li>选项A："+Q_AND_A[i].choi1+"</li>\
+					<li>选项B："+Q_AND_A[i].choi2+"</li>\
+					<li>选项C："+Q_AND_A[i].choi3+"</li>\
+					<li>选项D："+Q_AND_A[i].choi4+"</li>\
+				</div>\
+				<p>答案："+Q_AND_A[i].rta+"</p>\
+				</div>";
+				$('#add_question').before(to_add_html);
+			};
+			
+		};
+			
+		
+
+	</script>
+</html>

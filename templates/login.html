@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="..\static\LOGIN.css">
+	<script src="..\static\jquery.min.js"></script>
+	<script src="..\static\jquery.color.min.js"></script>
+	<title>LOGIN</title>
+</head>
+<body>
+	<div id = 'container'>
+		<div class="divider">IXAM</div>
+		<div class='divider'>创建你自己的小题库</div>
+		<div class='divider'>
+		<input type="text" placeholder="用户名" id='username' ></input>
+		</div>
+		<div class='divider'>
+		<input type="text" placeholder="密码" id='password'></input>
+		</div>
+		<div class='divider'>
+		<button id='login'> 登录</button>
+		</div>
+		<div class='divider'>
+		<button id='signin'>注册</button>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+	$('#login').click(function(){
+		var username1=$("#username").val();
+		var password1=$('#password').val();
+		var data={username:username1,password:password1};
+		$.post('/check',data,function(echo){
+			if(echo.auth=='true'){
+				loc='/editpage/<'+echo.usname+'>'
+				window.location=loc}else{alert('wrong');}
+		});
+
+	})
+	$('#signin').click(function(){
+		var username1=$("#username").val();
+		var password1=$('#password').val();
+		var data={username:username1,password:password1};
+		$.post('/sign',data,function(echo){
+			if(echo.auth=='true'){
+				alert('signin successfully');}else{alert('username already exist or illegal input');}
+		});
+
+	})
+</script>
+</html>
